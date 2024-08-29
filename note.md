@@ -119,3 +119,50 @@ Source: Conversation with Copilot, 8/28/2024
 (26) Intel Human Interface Device (HID) Driver for Windows 11 (64-bit .... https://support.lenovo.com/us/en/downloads/ds551582-intel-human-interface-device-hid-driver-for-windows-11-64-bit-lenovo-yoga-slim-7-14itl05-yoga-slim-7-15itl05-ideapad-slim-7-14itl05-ideapad-slim-7-15itl05.
 (27) Update drivers manually in Windows - Microsoft Support. https://support.microsoft.com/en-us/windows/update-drivers-manually-in-windows-ec62f46c-ff14-c91d-eead-d7126dc1f7b6.
 (28) undefined. https://www.catalog.update.microsoft.com/Search.aspx?q=windows%2011.
+
+
+
+
+
+###
+
+    [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\BootExecute]   
+
+    "AutoAdminLogon"="*cmd.exe /k X:\\Windows\\System32\\startnet.cmd*"
+    ```
+
+    *   Save the file.
+
+2.  **Modify `startnet.cmd`**:
+
+    *   Open the `startnet.cmd` file you created earlier (in the same `C:\WinPE_amd64\mount\Windows\System32` directory).
+
+    *   Add the following line at the beginning of the file:
+
+    ```batch
+    regedit /s X:\Windows\System32\setregistry.reg
+    ```
+
+    *   The complete `startnet.cmd` should now look like this:
+
+    ```batch
+    @echo off
+    regedit /s X:\Windows\System32\setregistry.reg
+    wpeinit
+
+    :: Start networking services
+    net start WLanSvc
+    net start dot3svc
+    net start tcpip
+    net start nsi
+
+    :: Start audio services
+    net start audiosrv
+
+    :: Launch File Explorer
+    explorer.exe
+    ```
+
+3. **Unmount and Commit:**
+
+    *   Unmount the WinPE image and commit the changes using the DISM commands as instructed in the original guide.
